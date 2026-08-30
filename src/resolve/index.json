@@ -1,0 +1,21 @@
+{
+  "fetched_at": "2026-08-29T00:00:00.000Z",
+  "source": "synthetic — see docs/adr/0006-synthetic-data-policy.md",
+  "clients": [
+    { "id": "C-1001", "name": "Riverbend Nail Studio LLC DBA Alpha Nail Spa Denton", "zip": "76201", "policies": ["FQ-88213401"] },
+    { "id": "C-1002", "name": "Cormac Whitfield", "zip": "77002", "policies": ["FQ-88219902"] },
+    { "id": "C-1003", "name": "Alder Plumbing & Rooter LLC", "zip": "78701", "policies": ["TW-4471-09"] },
+    { "id": "C-1004", "name": "Blue Ridge Vapor Co", "zip": "75201", "policies": ["PR-BOP-556213"] },
+    { "id": "C-1005", "name": "Sable Ridge Apartments LLC", "zip": "77494", "policies": ["FQ-88220771"] },
+    { "id": "C-1006", "name": "Meridian Access Systems, LLC", "zip": "77024", "policies": ["HX-2201-A"] },
+    { "id": "C-1007", "name": "Meridian Access Systems LLC", "zip": "77024", "policies": ["HX-2201-B"] },
+    { "id": "C-1008", "name": "Sunburst Nails of Katy LLC", "zip": "77450", "policies": ["FQ-88231190"] },
+    { "id": "C-1009", "name": "Sunburst Nails", "zip": "77002", "policies": ["FQ-88231555"] },
+    { "id": "C-1010", "name": "Brightwater Town Homes", "zip": "77584", "policies": ["PR-BOP-559901"] },
+    { "id": "C-1011", "name": "Hollis Ferreira", "zip": "78704", "policies": ["TFIA-3391201"] },
+    { "id": "C-1012", "name": "Kestrel Plumbing Group LLC", "zip": "78209", "policies": ["FQ-88240118"] },
+    { "id": "C-1013", "name": "Copperline Hospitality LLC", "zip": "77007", "policies": ["IPFS-991823"] },
+    { "id": "C-1014", "name": "Marlow Freight Solutions LLC", "zip": "75035", "policies": ["WS-201455"] },
+    { "id": "C-1015", "name": "Ainsworth Retail Group LLC", "zip": "77380", "policies": ["FQ-88251902"] }
+  ]
+}

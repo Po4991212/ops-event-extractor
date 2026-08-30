@@ -1,0 +1,9 @@
+{
+  "id": "coi-request-1",
+  "thread_id": "coi-thread-1",
+  "internal_date": 1781424000000,
+  "from_addr": "Certificaterequest@mycoisolution.com",
+  "from_domain": "mycoisolution.com",
+  "subject": "Certificate of Insurance Requested",
+  "body_full": "A certificate holder has requested a certificate of insurance.\n\nInsured Name: Fictional Test Account LLC\n\nThe current certificate on file is expiring in 9 days. Please issue an updated certificate."
+}

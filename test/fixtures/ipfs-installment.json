@@ -1,0 +1,9 @@
+{
+  "id": "ipfs-installment-1",
+  "thread_id": "ipfs-thread-1",
+  "internal_date": 1781424000000,
+  "from_addr": "donotreply@ipfs.com",
+  "from_domain": "ipfs.com",
+  "subject": "Installment Due Notice",
+  "body_full": "Premium Finance Installment Notice.\n\nAccount Number: 445291\nAmount Due: $310.00\nDue Date: October 3, 2026\n\nPlease remit payment before the due date to avoid cancellation."
+}

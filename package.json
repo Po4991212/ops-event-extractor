@@ -1,0 +1,33 @@
+{
+  "name": "ops-event-extractor",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Pipeline that turns operational email into typed OpsEvents, dated tasks, and SLA timers. Dry-run by default; synthetic data by default.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.16.0"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "cli": "node src/cli.js",
+    "migrate": "node src/cli.js migrate",
+    "seed:synthetic": "node src/cli.js seed-synthetic",
+    "replay": "node src/cli.js replay --as-of-mode",
+    "review": "node src/review/server.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.122.0",
+    "better-sqlite3": "^13.0.3",
+    "commander": "^15.0.0",
+    "express": "^5.2.1",
+    "googleapis": "^176.0.0",
+    "luxon": "^3.7.2",
+    "node-html-parser": "^9.0.2",
+    "p-limit": "^7.3.1",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.11"
+  }
+}

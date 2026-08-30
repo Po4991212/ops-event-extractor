@@ -1,0 +1,149 @@
+{
+  "_readme": "Fully fictional messages for demos, tests, and CI (§3.5, ADR 0006). Vendor sender domains are shaped like @carrier-example.com so this corpus is safe to show in a recording without implying a real vendor relationship. No name/policy/amount here overlaps with docs/SPEC.md's narrative examples — verified by test/no-real-names.spec.js.",
+  "messages": [
+    {
+      "id": "syn-ringcentral-001",
+      "thread_id": "syn-thread-001",
+      "internal_date": "2026-07-14T16:42:00.000Z",
+      "from_addr": "service@ringcentral-example.com",
+      "subject": "Notes of your call with +19999999999 on Tuesday, July 14, 2026 at 11:42 AM",
+      "body_raw": "Dear Agent, Here's the notes of your call with +19999999999 on Tuesday, July 14, 2026 at 11:42 AM: Agent discussed the property renewal quote for Alder Plumbing & Rooter LLC with Mr. Nolan.\n\nRecap\n * Agent informed Mr. Nolan that a quote for the Alder Plumbing & Rooter LLC renewal property was obtained from the wholesale market.\n\nTasks\n * Agent will email Mr. Nolan the quote from the wholesaler, including a comparison table from Northgate Underwriters and Ridgepoint Specialty, within the next few days.\n * Agent will try to find information about the $8,500 fire suppression system cost and follow up shortly.\n\nView transcript for full details."
+    },
+    {
+      "id": "syn-foxquilt-renewal-001",
+      "thread_id": "syn-thread-002",
+      "internal_date": "2026-06-10T09:00:00.000Z",
+      "from_addr": "renewal-us@foxquilt-example.com",
+      "subject": "Your policy is coming up for renewal",
+      "body_raw": "This is an automated notice from Foxquilt.\n\nPolicy Number: FQ-88213401\nInsured: Riverbend Nail Studio LLC DBA Alpha Nail Spa Denton\n\nYour policy Expiration Date: November 1, 2026. Please begin the renewal shopping process now to avoid a lapse in coverage."
+    },
+    {
+      "id": "syn-foxquilt-lapse-001",
+      "thread_id": "syn-thread-003",
+      "internal_date": "2026-08-01T09:00:00.000Z",
+      "from_addr": "policy@foxquilt-example.com",
+      "subject": "Renewal unsuccessful",
+      "body_raw": "This is an automated notice from Foxquilt.\n\nPolicy Number: FQ-99000111\n\nWe were unable to complete your renewal. Renewal was unsuccessful and coverage has lapsed as of the expiration date. Please contact the insured immediately."
+    },
+    {
+      "id": "syn-twia-001",
+      "thread_id": "syn-thread-004",
+      "internal_date": "2026-07-02T09:00:00.000Z",
+      "from_addr": "twia.appmail.np@twia-example.org",
+      "subject": "TWIA Renewal Offer",
+      "body_raw": "TWIA has issued a renewal offer for your policy ending in 4471.\n\nRenewal offer date: August 15, 2026. Please confirm with the insured before the renewal offer date."
+    },
+    {
+      "id": "syn-hellosign-pending-001",
+      "thread_id": "syn-thread-005",
+      "internal_date": "2026-07-20T13:15:00.000Z",
+      "from_addr": "noreply@mail.hellosign-example.com",
+      "subject": "Signature requested: \"Binding Documents - Blue Ridge Vapor Co\"",
+      "body_raw": "\"Binding Documents - Blue Ridge Vapor Co\" is awaiting your signature. Please review and sign at your earliest convenience."
+    },
+    {
+      "id": "syn-hellosign-signed-001",
+      "thread_id": "syn-thread-006",
+      "internal_date": "2026-07-22T09:05:00.000Z",
+      "from_addr": "noreply@mail.hellosign-example.com",
+      "subject": "Completed: \"No-Loss Letter - Sable Ridge Apartments LLC\"",
+      "body_raw": "\"No-Loss Letter - Sable Ridge Apartments LLC\" has been completed. All parties have signed."
+    },
+    {
+      "id": "syn-ipfs-001",
+      "thread_id": "syn-thread-007",
+      "internal_date": "2026-07-05T09:00:00.000Z",
+      "from_addr": "donotreply@ipfs-example.com",
+      "subject": "Installment Due Notice",
+      "body_raw": "Premium Finance Installment Notice.\n\nAccount Number: 991823\nAmount Due: $612.40\nDue Date: July 25, 2026\n\nPlease remit payment before the due date to avoid cancellation."
+    },
+    {
+      "id": "syn-progressive-uw-001",
+      "thread_id": "syn-thread-008",
+      "internal_date": "2026-07-11T09:00:00.000Z",
+      "from_addr": "bopuwr@progressive-example.com",
+      "subject": "Additional information needed",
+      "body_raw": "Policy Number: 04 556213-1\n\nUnderwriting needs additional information regarding the number of employees on site. Please provide additional information to keep this submission moving."
+    },
+    {
+      "id": "syn-progressive-endorsement-001",
+      "thread_id": "syn-thread-009",
+      "internal_date": "2026-07-18T09:00:00.000Z",
+      "from_addr": "bopuwr@progressive-example.com",
+      "subject": "Endorsement request received",
+      "body_raw": "Policy Number: 04 559901-2\n\nWe have received your endorsement request for this policy change. Please review the attached change summary."
+    },
+    {
+      "id": "syn-coisolution-001",
+      "thread_id": "syn-thread-010",
+      "internal_date": "2026-07-08T09:00:00.000Z",
+      "from_addr": "certificaterequest@mycoisolution-example.com",
+      "subject": "Certificate of Insurance Requested",
+      "body_raw": "A certificate holder has requested a certificate of insurance.\n\nInsured Name: Copperline Hospitality LLC\n\nThe current certificate on file is expiring in 12 days. Please issue an updated certificate."
+    },
+    {
+      "id": "syn-noise-mfa-001",
+      "thread_id": "syn-thread-011",
+      "internal_date": "2026-07-09T09:00:00.000Z",
+      "from_addr": "verifymfa@hanover-example.com",
+      "subject": "Your one-time verification code",
+      "body_raw": "Your one-time verification code is 482913. This code expires in 10 minutes."
+    },
+    {
+      "id": "syn-unstructured-001",
+      "thread_id": "syn-thread-012",
+      "internal_date": "2026-07-16T10:30:00.000Z",
+      "from_addr": "hollis.ferreira@example-client.com",
+      "subject": "Question about my payment",
+      "body_raw": "Hi, I wanted to check in about the premium payment we discussed on the phone last week. Can someone confirm the amount and when it's due? Thanks, Hollis"
+    },
+    {
+      "id": "syn-earlyrenewal-001",
+      "thread_id": "syn-thread-013",
+      "internal_date": "2026-06-05T09:00:00.000Z",
+      "from_addr": "renewal-us@foxquilt-example.com",
+      "subject": "Your policy is coming up for renewal",
+      "body_raw": "This is an automated notice from Foxquilt.\n\nPolicy Number: FQ-88251902\nInsured: Ainsworth Retail Group LLC\n\nYour policy Expiration Date: November 15, 2026. Please begin the renewal shopping process now to avoid a lapse in coverage."
+    },
+    {
+      "id": "syn-forward-delivery-001",
+      "thread_id": "syn-thread-014",
+      "internal_date": "2026-07-01T09:00:00.000Z",
+      "from_addr": "renewal-us@foxquilt-example.com",
+      "subject": "Your policy is coming up for renewal",
+      "body_raw": "This is an automated notice from Foxquilt.\n\nPolicy Number: FQ-88231190\nInsured: Sunburst Nails of Katy LLC\n\nYour policy Expiration Date: September 30, 2026. Please begin the renewal shopping process now to avoid a lapse in coverage."
+    },
+    {
+      "id": "syn-forward-delivery-002",
+      "thread_id": "syn-thread-014",
+      "internal_date": "2026-07-03T09:00:00.000Z",
+      "from_addr": "renewal-us@foxquilt-example.com",
+      "subject": "REMINDER: Your policy is coming up for renewal",
+      "body_raw": "This is a reminder notice from Foxquilt (2nd notice).\n\nPolicy Number: FQ-88231190\nInsured: Sunburst Nails of Katy LLC\n\nYour policy Expiration Date: September 30, 2026. Please begin the renewal shopping process now to avoid a lapse in coverage."
+    },
+    {
+      "id": "syn-forward-delivery-003",
+      "thread_id": "syn-thread-014",
+      "internal_date": "2026-07-06T09:00:00.000Z",
+      "from_addr": "renewal-us@foxquilt-example.com",
+      "subject": "FINAL REMINDER: Your policy is coming up for renewal",
+      "body_raw": "This is a final reminder notice from Foxquilt (3rd notice).\n\nPolicy Number: FQ-88231190\nInsured: Sunburst Nails of Katy LLC\n\nYour policy Expiration Date: September 30, 2026. Please begin the renewal shopping process now to avoid a lapse in coverage."
+    },
+    {
+      "id": "syn-dailytasks-001",
+      "thread_id": "syn-thread-015",
+      "internal_date": "2026-07-17T18:00:00.000Z",
+      "from_addr": "ops-summary@aiinsure-example.com",
+      "subject": "Daily Task Summary — 7/17",
+      "body_raw": "Completed\n   - Copperline Hospitality LLC – Issued the COI requested by the certificate holder. Uploaded confirmation to QQ. Case completed.\n\nPending / Follow-up\n   - Cormac Whitfield – Followed up on the renewal payment. Payment has not been made yet. Emailed the insured with another reminder. Follow-up scheduled for 7/24 to confirm receipt.\n   - Blue Ridge Vapor Co – Followed up on pending signature for binding documents. Not yet signed. Follow-up scheduled for 7/23."
+    },
+    {
+      "id": "syn-dailytasks-002",
+      "thread_id": "syn-thread-016",
+      "internal_date": "2026-08-05T18:00:00.000Z",
+      "from_addr": "ops-summary@aiinsure-example.com",
+      "subject": "Daily Task Summary — 8/5",
+      "body_raw": "Completed\n   - Sable Ridge Apartments LLC – Followed up on the no-loss letter. The document was signed, and the agent filed it. Case completed.\n\nPending / Follow-up\n   - Ainsworth Retail Group LLC – Followed up on the upcoming renewal. Renewal quote is in progress. Follow-up scheduled for 8/20.\n   - Kestrel Plumbing Group LLC – Followed up on a cancellation notice from the carrier. Insured has not responded. Follow-up scheduled for 8/12."
+    }
+  ]
+}

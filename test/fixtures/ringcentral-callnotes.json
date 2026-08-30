@@ -1,0 +1,9 @@
+{
+  "id": "rc-call-1",
+  "thread_id": "rc-thread-1",
+  "internal_date": 1781424000000,
+  "from_addr": "service@ringcentral.com",
+  "from_domain": "ringcentral.com",
+  "subject": "Notes of your call with +19999999999 on Monday, October 6, 2026 at 10:00 AM",
+  "body_full": "Dear Agent, Here's the notes of your call with +19999999999 on Monday, October 6, 2026 at 10:00 AM: Agent discussed the renewal for Alder Plumbing & Rooter LLC with the insured.\nRecap\n * Agent informed the insured that a quote for the Alder Plumbing & Rooter LLC renewal was obtained.\nTasks\n * Agent will email the insured the quote within the next few days.\nView transcript for full details."
+}

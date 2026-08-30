@@ -1,0 +1,22 @@
+node_modules/
+npm-debug.log*
+
+# Local database + raw mail cache — never committed
+data/ops.db
+data/ops.db-*
+data/raw/
+data/private/
+
+# Secrets — never committed. Use OS credential store or these gitignored files.
+.env
+.env.local
+*.token.json
+credentials/
+
+# Test/coverage output
+coverage/
+.vitest-cache/
+
+# OS
+.DS_Store
+Thumbs.db

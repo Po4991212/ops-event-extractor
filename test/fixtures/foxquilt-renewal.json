@@ -1,0 +1,9 @@
+{
+  "id": "fx-renewal-1",
+  "thread_id": "fx-thread-1",
+  "internal_date": 1781424000000,
+  "from_addr": "renewal-us@foxquilt.com",
+  "from_domain": "foxquilt.com",
+  "subject": "Your policy is coming up for renewal",
+  "body_full": "This is an automated notice from Foxquilt.\n\nPolicy Number: FQ-77102233\nInsured: Fictional Test Account LLC\n\nYour policy Expiration Date: October 12, 2026. Please begin the renewal shopping process now to avoid a lapse in coverage."
+}
