@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { DataModeError } = require('../core/errors');
 const { SLA, MISSING_SLA_KINDS, EVENT_KINDS, validateSla } = require('./sla');
+const { validateCategories } = require('./categories');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 
@@ -85,6 +86,8 @@ function load(overrides = {}) {
 
   const slaProblems = validateSla(cfg.sla);
   if (slaProblems.length) throw new Error(`SLA configuration invalid:\n  ${slaProblems.join('\n  ')}`);
+  const catProblems = validateCategories();
+  if (catProblems.length) throw new Error(`category configuration invalid:\n  ${catProblems.join('\n  ')}`);
 
   return cfg;
 }

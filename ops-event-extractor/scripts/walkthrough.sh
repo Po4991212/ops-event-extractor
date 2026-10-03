@@ -49,10 +49,13 @@ step "12. Replay from scratch in arrival order and score against the labels"
 rm -f var/eval.sqlite var/eval.sqlite-wal var/eval.sqlite-shm
 node src/cli.js --db=var/eval.sqlite eval --now=2026-03-01T00:00:00Z --json=out/metrics.json
 
-step "13. Patterns learned from model answers during the replay (shadow only; none approved)"
+step "13. Emails sorted into the agency's 18 categories, suspicious ones listed"
+node src/cli.js --db=var/eval.sqlite categories
+
+step "14. Patterns learned from model answers during the replay (shadow only; none approved)"
 node src/cli.js --db=var/eval.sqlite patterns
 
-step "14. Full test suite"
+step "15. Full test suite"
 npm test --silent
 
 printf '\n\033[1mDone.\033[0m Review console: npm run ops -- review --db=%s\n' "$DB"

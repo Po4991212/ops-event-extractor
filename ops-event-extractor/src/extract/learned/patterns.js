@@ -4,6 +4,7 @@ const { audit } = require('../../db/db');
 const C = require('../parsers/common');
 const { parseDatePhrase, allDatePhrases, parseAmount } = require('../dates');
 const { addressOf } = require('../router');
+const { categoryForKind } = require('../categorize');
 
 /**
  * Learned patterns.
@@ -203,8 +204,12 @@ function internalDomains(cfg) {
 
 function get(db, id) { return db.prepare('SELECT * FROM learned_patterns WHERE id = ?').get(id); }
 
+/** Grouped by the agency's category number, uncategorized last. */
 function list(db) {
-  return db.prepare('SELECT * FROM learned_patterns ORDER BY sender, kind, created_at').all();
+  const { BY_ID } = require('../../config/categories');
+  const n = (p) => (BY_ID.get(p.category) || { n: 99 }).n;
+  return db.prepare('SELECT * FROM learned_patterns ORDER BY sender, kind, created_at').all()
+    .sort((a, b) => n(a) - n(b));
 }
 
 function setStatus(db, clock, pattern, status, reason, actor) {
@@ -218,7 +223,7 @@ function setStatus(db, clock, pattern, status, reason, actor) {
  * Stores a new shadow pattern from an accepted model event. Only one active
  * pattern per sender and kind: a second would compete with the first.
  */
-function learn(db, cfg, clock, { message, event }) {
+function learn(db, cfg, clock, { message, event, family = null }) {
   const sender = senderOf(message);
   if (!sender) return { learned: false, reason: 'no sender address' };
   // Colleagues write in their own words every time; only machine-sent
@@ -241,9 +246,11 @@ function learn(db, cfg, clock, { message, event }) {
 
   const now = clock.nowISO();
   db.prepare(`INSERT INTO learned_patterns
-    (id, sender, kind, responsible_party, rules_json, status, status_reason, learned_from_message_id, created_at, updated_at)
-    VALUES (?,?,?,?,?,'shadow',?,?,?,?)`).run(
-    id, sender, event.kind, event.responsible_party || 'unknown', JSON.stringify(induced.rules),
+    (id, sender, kind, category, responsible_party, rules_json, status, status_reason, learned_from_message_id, created_at, updated_at)
+    VALUES (?,?,?,?,?,?,'shadow',?,?,?,?)`).run(
+    id, sender, event.kind,
+    categoryForKind(event.kind, { family, text: `${message.subject || ''}\n${(message.blocks || []).map((b) => b.canonical_text).join('\n')}` }),
+    event.responsible_party || 'unknown', JSON.stringify(induced.rules),
     'learned from an accepted model extraction', message.id, now, now,
   );
   audit(db, { at: now, actor: 'learned-patterns', action: 'learned_pattern_created',

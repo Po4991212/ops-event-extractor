@@ -71,6 +71,7 @@ test('an accepted model answer becomes a shadow pattern built from template word
     assert.equal(p.status, 'shadow');
     assert.equal(p.sender, SENDER);
     assert.equal(p.kind, 'payment_due');
+    assert.equal(p.category, 'billing');
     const rules = JSON.parse(p.rules_json);
     assert.deepEqual(rules.trigger, ['Payment', 'is', 'due', 'by']);
     assert.deepEqual(rules.fields.stated_deadline.cue, ['Payment', 'is', 'due', 'by']);

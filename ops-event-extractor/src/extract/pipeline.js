@@ -10,6 +10,7 @@ const { acceptCandidate, quarantineCandidate, recordCandidate } = require('../ev
 const { upsertTask, markUrgent } = require('../tasks/tasks');
 const { getMessage } = require('../ingest/store');
 const learned = require('./learned/patterns');
+const categories = require('./categorize');
 
 /**
  * One message in, zero or more obligations out.
@@ -112,7 +113,27 @@ function processEvents(db, cfg, clock, message, blocks, events, { source, versio
   return out;
 }
 
-async function processMessage(db, cfg, clock, messageId, { sources = null, modelExtractor = null, log } = {}) {
+/**
+ * Extracts, then files the email under one of the agency's eighteen categories.
+ * Categorizing comes last because a grounded obligation is the best evidence
+ * of what an email is about.
+ */
+async function processMessage(db, cfg, clock, messageId, opts = {}) {
+  const out = await extractMessage(db, cfg, clock, messageId, opts);
+  const message = getMessage(db, messageId);
+  const c = categories.categorize(message, out, { sources: opts.sources || undefined });
+  categories.record(db, clock, messageId, c);
+
+  // Learn only from model answers that passed every evidence gate, and never
+  // from a suspicious email: the first version learned a pattern from a
+  // lookalike "TWIA" sender, which would have taught the system to trust it.
+  if (cfg.learnedPatterns && cfg.learnedPatterns.enabled && out.modelStatus === 'ok' && !c.suspicious) {
+    for (const a of out.accepted) learned.learn(db, cfg, clock, { message, event: a.event, family: out.routing.family });
+  }
+  return { ...out, category: c };
+}
+
+async function extractMessage(db, cfg, clock, messageId, { sources = null, modelExtractor = null, log } = {}) {
   const message = getMessage(db, messageId);
   if (!message) throw new Error(`unknown message ${messageId}`);
   const blocks = message.blocks;
@@ -202,10 +223,6 @@ async function processMessage(db, cfg, clock, messageId, { sources = null, model
     const res = processEvents(db, cfg, clock, message, blocks, modelEvents,
       { source: 'model', version: cfg.model.name, family: routing.family });
 
-    // Only answers that passed every evidence gate are worth learning from.
-    if (lp) {
-      for (const a of res.accepted) learned.learn(db, cfg, clock, { message, event: a.event });
-    }
     return { routing, events: modelEvents.length, ...res, deferred: false, modelStatus: 'ok' };
   }
 

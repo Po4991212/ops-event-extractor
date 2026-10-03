@@ -52,6 +52,11 @@ waits for a named person. Approved patterns are still spot-checked, and one
 disagreement suspends them. Patterns are phrases, never generated code. See
 `docs/adr/0006-learned-patterns.md`.
 
+**Categories describe emails; kinds describe obligations.** The agency's 18
+categories live in `src/config/categories.js`. Event kinds keep their SLAs in
+`src/config/sla.js`. Do not merge the two: that would mean inventing deadlines
+for mail that owes nobody anything.
+
 **No insurance transactions.** This system never binds, cancels, endorses, pays
 or states that coverage is in force. It describes what a message says a human
 must do.
@@ -73,7 +78,7 @@ must do.
 
 ## Before you claim something works
 
-Run `npm test` (52 tests) and `bash scripts/walkthrough.sh`. Metrics from the
+Run `npm test` (78 tests) and `bash scripts/walkthrough.sh`. Metrics from the
 offline stub describe fixture behaviour, not model quality, and must be labelled
 that way wherever they are reported. If you have not run a thing against a live
 system, say so in the same sentence you describe it.
