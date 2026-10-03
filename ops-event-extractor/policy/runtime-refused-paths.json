@@ -1,0 +1,4 @@
+{
+  "_comment": "Runtime path fragments the HTTP capability layer refuses regardless of host. Kept outside src/ so the source scanner never matches its own data.",
+  "fragments": ["/messages/send", "/sendmessage", "/mail.send", "/v3/mail", "/messages.send", "/sendemail", "/sendrawemail"]
+}

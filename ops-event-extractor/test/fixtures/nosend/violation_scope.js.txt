@@ -1,0 +1,3 @@
+// Negative fixture: a widened OAuth scope constant.
+const SCOPES = ['https://www.googleapis.com/auth/gmail.readonly', 'https://www.googleapis.com/auth/gmail.send'];
+module.exports = { SCOPES };

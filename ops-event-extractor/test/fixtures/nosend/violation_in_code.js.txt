@@ -1,0 +1,7 @@
+// Negative fixture. Stored as .txt so it is never loadable application code.
+const { google } = require('googleapis');
+async function bad(auth, raw) {
+  const gmail = google.gmail({ version: 'v1', auth });
+  return gmail.users.messages.send({ userId: 'me', requestBody: { raw } });
+}
+module.exports = { bad };

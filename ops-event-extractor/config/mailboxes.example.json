@@ -1,0 +1,11 @@
+{
+  "_comment": "Copy to config/mailboxes.json. Only the first address was supplied by the agency. The remaining four are NOT invented here - fill them in before live sync. Unconfigured entries are reported as live-acceptance blockers, not silently skipped.",
+  "timezone": "America/Chicago",
+  "mailboxes": [
+    { "id": "mbx_commercialtx", "address": "commercial-tx@agency.test", "label": "Commercial TX", "configured": true },
+    { "id": "mbx_2", "address": null, "label": "UNCONFIGURED - obtain from agency", "configured": false },
+    { "id": "mbx_3", "address": null, "label": "UNCONFIGURED - obtain from agency", "configured": false },
+    { "id": "mbx_4", "address": null, "label": "UNCONFIGURED - obtain from agency", "configured": false },
+    { "id": "mbx_5", "address": null, "label": "UNCONFIGURED - obtain from agency", "configured": false }
+  ]
+}

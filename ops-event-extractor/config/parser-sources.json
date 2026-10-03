@@ -1,0 +1,19 @@
+{
+  "_comment": "Sender identities per parser family. UNVERIFIED: these were not confirmed against a supplied production corpus. Treat every entry as a sample to check before relying on routing in live mode. Matching is exact address or exact domain/subdomain - never substring, so a lookalike such as twia.test.evil-lookalike.test does not match twia.test.",
+  "verified_against_live_corpus": false,
+  "families": {
+    "ringcentral":  { "domains": ["ringcentral.com", "ringcentral.test"], "addresses": [] },
+    "foxquilt":     { "domains": ["foxquilt.com", "foxquilt.test"], "addresses": [] },
+    "twia":         { "domains": ["twia.org", "twia.test"], "addresses": [] },
+    "hellosign":    { "domains": ["hellosign.com", "dropboxsign.com", "hellosign.test"], "addresses": [] },
+    "ipfs":         { "domains": ["ipfs.com", "ipfs.test"], "addresses": [] },
+    "progressive":  { "domains": ["progressive.com", "progressive.test"], "addresses": [] },
+    "coisolution":  { "domains": ["coisolution.com", "coisolution.test"], "addresses": [] },
+    "amwins_tfia":  { "domains": ["amwins.com", "tfia.com", "amwins.test", "tfia.test"], "addresses": [] },
+    "wholesure":    { "domains": ["wholesure.com", "wholesure.test"], "addresses": [] }
+  },
+  "benign_templates": [
+    { "family": "progressive", "subject": "^New sign-in to your Progressive agent account" },
+    { "family": "wholesure", "subject": "^Q[1-4] appetite update$" }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "_comment": "Prohibited outbound-capability patterns. Kept OUTSIDE src/ so the scanner never matches its own pattern list. Scanned targets are src/ and scripts/.",
+  "version": 1,
+  "patterns": [
+    { "id": "gmail-messages-send", "regex": "users\\.messages\\.send|messages\\.send\\s*\\(", "why": "Gmail message send endpoint" },
+    { "id": "gmail-drafts-send", "regex": "drafts\\.send", "why": "Gmail draft send endpoint" },
+    { "id": "gmail-send-path", "regex": "/gmail/v1/users/[^\"'`]*/messages/send", "why": "Gmail send REST path" },
+    { "id": "gmail-send-scope", "regex": "auth/gmail\\.send|auth/gmail\\.compose", "why": "OAuth scope that authorizes outbound delivery" },
+    { "id": "gmail-full-scope", "regex": "https://mail\\.google\\.com/", "why": "Full mail scope includes outbound delivery" },
+    { "id": "smtp-client", "regex": "nodemailer|createTransport|sendMail|smtp://|SMTPTransport", "why": "SMTP delivery client" },
+    { "id": "smtp-port", "regex": "port\\s*:\\s*(25|465|587)\\b", "why": "SMTP delivery port" },
+    { "id": "esp-sdk", "regex": "sendgrid|@sendgrid|mailgun|postmarkapp|resend\\.emails|ses\\.sendEmail|SendRawEmail", "why": "Third-party email delivery provider" }
+  ],
+  "targets": ["src", "scripts"],
+  "extensions": [".js", ".mjs", ".cjs", ".json", ".sql", ".sh"]
+}

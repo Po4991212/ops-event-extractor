@@ -1,0 +1,12 @@
+node_modules/
+var/
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+.env
+.env.local
+private/
+raw/
+out/
+config/mailboxes.json
+private-names.txt

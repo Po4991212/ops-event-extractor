@@ -1,0 +1,5 @@
+// Negative fixture: the capability appears ONLY inside a comment.
+// TODO(next sprint): re-enable delivery with nodemailer createTransport once
+// the agency signs off. Left here so the scanner has to catch comments too.
+function noop() { return null; }
+module.exports = { noop };

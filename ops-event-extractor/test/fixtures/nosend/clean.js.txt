@@ -1,0 +1,5 @@
+// Positive fixture: drafting text locally is allowed and must not trip the scan.
+function buildDraftText(task) {
+  return `Following up on ${task.subject}; the outstanding item is still open.`;
+}
+module.exports = { buildDraftText };
