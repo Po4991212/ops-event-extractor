@@ -46,6 +46,12 @@ the threat model.
 and `OPS_MODEL_TRANSMISSION_APPROVED=1` is required separately before any
 message content leaves the machine.
 
+**Learned patterns never approve themselves.** A pattern induced from model
+output runs in shadow until it has agreed with the model repeatedly, then
+waits for a named person. Approved patterns are still spot-checked, and one
+disagreement suspends them. Patterns are phrases, never generated code. See
+`docs/adr/0006-learned-patterns.md`.
+
 **No insurance transactions.** This system never binds, cancels, endorses, pays
 or states that coverage is in force. It describes what a message says a human
 must do.
@@ -67,7 +73,7 @@ must do.
 
 ## Before you claim something works
 
-Run `npm test` (40 tests) and `bash scripts/walkthrough.sh`. Metrics from the
+Run `npm test` (52 tests) and `bash scripts/walkthrough.sh`. Metrics from the
 offline stub describe fixture behaviour, not model quality, and must be labelled
 that way wherever they are reported. If you have not run a thing against a live
 system, say so in the same sentence you describe it.

@@ -39,7 +39,9 @@ function score(event, { resolution, gateResult, source, message }) {
   const amtOk = event.amount === null || Number.isFinite(Number(event.amount));
   parts.parsing = (dateOk ? 0.5 : 0) + (amtOk ? 0.5 : 0);
 
-  parts.extractor = source === 'parser' ? 1.0 : 0.6;
+  // A learned pattern sits between the two: deterministic like a parser, but
+  // induced from model output rather than written and reviewed as code.
+  parts.extractor = { parser: 1.0, learned: 0.8 }[source] ?? 0.6;
   parts.self_report = Math.max(0, Math.min(1, Number(event.model_confidence ?? 0)));
 
   let total = 0;

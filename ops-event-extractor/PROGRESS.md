@@ -13,7 +13,7 @@ credentials and no API account.
 
 | | |
 |---|---|
-| Tests | 40 passing (`npm test`) |
+| Tests | 52 passing (`npm test`) |
 | Walkthrough | 13 steps, all passing (`bash scripts/walkthrough.sh`) |
 | Corpus | 36 synthetic messages, 8 accounts, 6 policies, 6 AMS activity rows |
 | Precision | 27/27 |

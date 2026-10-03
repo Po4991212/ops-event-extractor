@@ -198,6 +198,49 @@ const COMMANDS = {
     if (r.findings.length) process.exitCode = 1;
   },
 
+  async patterns(flags, args = []) {
+    const { cfg, db, clock } = ctx(flags);
+    migrate(db);
+    const learned = require('./extract/learned/patterns');
+    const [action, id] = args;
+    if (action === 'approve') {
+      const p = learned.approve(db, clock, id, { by: flags.by });
+      console.log(`approved ${p.id} (${p.sender}, ${p.kind}) by ${p.approved_by}`);
+      console.log(`it now replaces the model call for matching mail; every ${cfg.learnedPatterns.spotCheckEvery}th use is still checked by the model`);
+      return;
+    }
+    if (action === 'retire') {
+      const p = learned.retire(db, clock, id, { by: flags.by, reason: flags.reason });
+      console.log(`retired ${p.id}: ${p.status_reason}`);
+      return;
+    }
+    if (action === 'show') {
+      const p = learned.get(db, id);
+      if (!p) throw new Error(`no learned pattern ${id}`);
+      const rules = JSON.parse(p.rules_json);
+      console.log(`${p.id}  ${p.status}  ${p.sender}  ${p.kind}`);
+      console.log(`  trigger:  "${rules.trigger.join(' ')}"`);
+      for (const [f, r] of Object.entries(rules.fields)) console.log(`  ${f}: the ${r.type} after "${r.cue.join(' ')}"`);
+      console.log(`  ${p.status_reason || ''}`);
+      for (const t of db.prepare('SELECT * FROM learned_pattern_trials WHERE pattern_id = ? ORDER BY created_at').all(p.id)) {
+        console.log(`  ${t.mode} ${t.outcome} on ${t.message_id} ${t.detail_json}`);
+      }
+      return;
+    }
+    if (action) throw new Error(`unknown patterns action "${action}" (use: approve, retire, show)`);
+    const rows = learned.list(db);
+    if (!rows.length) { console.log('no learned patterns yet'); return; }
+    console.log('id                           status     agree  differ  no-match  uses  sender / kind');
+    for (const p of rows) {
+      console.log(`${p.id.padEnd(28)} ${p.status.padEnd(10)} ${String(p.agreements).padStart(5)}  ${String(p.disagreements).padStart(6)}  `
+        + `${String(p.no_matches).padStart(8)}  ${String(p.uses).padStart(4)}  ${p.sender} / ${p.kind}`);
+    }
+    const saved = rows.reduce((n, p) => n + p.uses, 0);
+    console.log(`\nmodel calls replaced by approved patterns: ${saved}`);
+    const ready = rows.filter((p) => p.status === 'ready');
+    if (ready.length) console.log(`${ready.length} pattern(s) waiting for a person: npm run ops -- patterns show <id>, then patterns approve <id> --by=NAME`);
+  },
+
   async status(flags) {
     const { cfg, db } = ctx(flags);
     migrate(db);
@@ -235,13 +278,14 @@ async function main() {
   qq-dryrun            build AMS notes and show them without sending
   scan-nosend          fail if any send capability appears in the source
   check-leakage        fail if real names or secrets appear in the tree
+  patterns             list learned patterns; patterns show|approve|retire <id> [--by=NAME]
   status               counts and configuration
 
-Options: --db=PATH --now=ISO --live --parsers-only --port=N --json=PATH --out=PATH --fresh --verbose`);
+Options: --db=PATH --now=ISO --live --parsers-only --port=N --json=PATH --out=PATH --fresh --verbose --by=NAME`);
     process.exitCode = cmd ? 1 : 0;
     return;
   }
-  await COMMANDS[cmd](flags);
+  await COMMANDS[cmd](flags, _.slice(1));
 }
 
 if (require.main === module) {
