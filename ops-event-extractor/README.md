@@ -80,6 +80,8 @@ Every command below exists and has been run.
 | `qq-dryrun` | build agency-system notes and show them without sending |
 | `scan-nosend` | fail if any send capability appears in the source |
 | `check-leakage` | fail if real names or secrets appear in the tree |
+| `categories` | emails per category (the agency's 18) and any suspicious ones; `--list` shows each email |
+| `patterns` | list learned patterns; `patterns show\|approve\|retire <id> --by=NAME` |
 | `status` | counts and configuration |
 
 Options: `--db=PATH --now=ISO --live --parsers-only --port=N --json=PATH
@@ -117,6 +119,22 @@ Anything else — an unknown sender, a known sender with a new template, a
 forward — goes to model extraction. Both paths produce candidates that face the
 same gates.
 
+Every email is also filed under one of the agency's **18 categories** (new
+business, underwriting, renewals, certificates, billing, claims and so on), with
+no model call. A lookalike sender, a request to change bank details, phishing
+or a risky attachment puts it under "suspicious" first. Otherwise an extracted
+obligation decides, then subject and body keywords, and if nothing fits a
+person sorts it. See `docs/adr/0007-email-categories.md`.
+
+When the model reads an email from a sender outside the agency and its answer
+passes every gate, the system writes down a **learned pattern** for that
+template: a trigger phrase and the words that come before each value. The
+pattern runs in shadow next to the model. Once it has agreed three times, a
+person can approve it with `patterns approve <id> --by=NAME`, and from then on
+matching emails skip the model call. Every tenth use is still re-read by the
+model, and a disagreement suspends the pattern. See
+`docs/adr/0006-learned-patterns.md`.
+
 ## Configuration
 
 Copy `.env.example`. The switches that matter:
@@ -143,7 +161,7 @@ placeholders and `init` tells you so.
 npm test
 ```
 
-40 tests: the nine acceptance scenarios, the failure stories, infrastructure
+78 tests: the nine acceptance scenarios, the failure stories, infrastructure
 behaviour (charset, pagination, expired history, reprocessing, crash rollback,
 model refusal, unknown dispatch outcomes, all four write-switch combinations),
 and the security properties.

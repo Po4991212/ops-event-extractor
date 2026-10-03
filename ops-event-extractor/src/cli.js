@@ -198,6 +198,80 @@ const COMMANDS = {
     if (r.findings.length) process.exitCode = 1;
   },
 
+  async patterns(flags, args = []) {
+    const { cfg, db, clock } = ctx(flags);
+    migrate(db);
+    const learned = require('./extract/learned/patterns');
+    const [action, id] = args;
+    if (action === 'approve') {
+      const p = learned.approve(db, clock, id, { by: flags.by });
+      console.log(`approved ${p.id} (${p.sender}, ${p.kind}) by ${p.approved_by}`);
+      console.log(`it now replaces the model call for matching mail; every ${cfg.learnedPatterns.spotCheckEvery}th use is still checked by the model`);
+      return;
+    }
+    if (action === 'retire') {
+      const p = learned.retire(db, clock, id, { by: flags.by, reason: flags.reason });
+      console.log(`retired ${p.id}: ${p.status_reason}`);
+      return;
+    }
+    if (action === 'show') {
+      const p = learned.get(db, id);
+      if (!p) throw new Error(`no learned pattern ${id}`);
+      const rules = JSON.parse(p.rules_json);
+      console.log(`${p.id}  ${p.status}  ${p.sender}  ${p.kind}  category: ${p.category || 'none'}`);
+      console.log(`  trigger:  "${rules.trigger.join(' ')}"`);
+      for (const [f, r] of Object.entries(rules.fields)) console.log(`  ${f}: the ${r.type} after "${r.cue.join(' ')}"`);
+      console.log(`  ${p.status_reason || ''}`);
+      for (const t of db.prepare('SELECT * FROM learned_pattern_trials WHERE pattern_id = ? ORDER BY created_at').all(p.id)) {
+        console.log(`  ${t.mode} ${t.outcome} on ${t.message_id} ${t.detail_json}`);
+      }
+      return;
+    }
+    if (action) throw new Error(`unknown patterns action "${action}" (use: approve, retire, show)`);
+    const rows = learned.list(db);
+    if (!rows.length) { console.log('no learned patterns yet'); return; }
+    const { BY_ID } = require('./config/categories');
+    let current;
+    for (const p of rows) {
+      if (p.category !== current) {
+        current = p.category;
+        const c = BY_ID.get(current);
+        console.log(`\n${c ? `${c.n}. ${c.label}` : 'Uncategorized'}`);
+        console.log('  id                           status     agree  differ  no-match  uses  sender / kind');
+      }
+      console.log(`  ${p.id.padEnd(28)} ${p.status.padEnd(10)} ${String(p.agreements).padStart(5)}  ${String(p.disagreements).padStart(6)}  `
+        + `${String(p.no_matches).padStart(8)}  ${String(p.uses).padStart(4)}  ${p.sender} / ${p.kind}`);
+    }
+    const saved = rows.reduce((n, p) => n + p.uses, 0);
+    console.log(`\nmodel calls replaced by approved patterns: ${saved}`);
+    const ready = rows.filter((p) => p.status === 'ready');
+    if (ready.length) console.log(`${ready.length} pattern(s) waiting for a person: npm run ops -- patterns show <id>, then patterns approve <id> --by=NAME`);
+  },
+
+  async categories(flags) {
+    const { db } = ctx(flags);
+    migrate(db);
+    const { CATEGORIES } = require('./config/categories');
+    const counts = new Map(db.prepare('SELECT category, COUNT(*) c FROM message_categories GROUP BY category').all()
+      .map((r) => [r.category, r.c]));
+    for (const c of [...CATEGORIES].sort((a, b) => a.n - b.n)) {
+      console.log(`${String(c.n).padStart(2)}. ${c.label.padEnd(54)} ${String(counts.get(c.id) || 0).padStart(4)}`);
+    }
+    console.log(`    ${'Uncategorized (a person sorts these)'.padEnd(54)} ${String(counts.get(null) || 0).padStart(4)}`);
+    const sus = db.prepare(`SELECT m.from_addr, m.subject, c.reason FROM message_categories c JOIN messages m ON m.id = c.message_id
+      WHERE c.suspicious = 1 ORDER BY m.observed_ts`).all();
+    if (sus.length) {
+      console.log(`\nsuspicious (${sus.length}) - do not act on these without checking with the sender by phone:`);
+      for (const s of sus) console.log(`  ${s.from_addr} | ${s.subject}\n      ${s.reason}`);
+    }
+    if (flags.list) {
+      const rows = db.prepare(`SELECT c.category_n n, c.source, c.reason, m.subject FROM message_categories c
+        JOIN messages m ON m.id = c.message_id ORDER BY c.category_n, m.observed_ts`).all();
+      console.log('');
+      for (const r of rows) console.log(`  ${String(r.n ?? '-').padStart(2)}  ${(r.subject || '').slice(0, 60).padEnd(60)}  ${r.source}: ${r.reason}`);
+    }
+  },
+
   async status(flags) {
     const { cfg, db } = ctx(flags);
     migrate(db);
@@ -208,6 +282,9 @@ const COMMANDS = {
       + `| urgent ${q('SELECT COUNT(*) c FROM tasks WHERE urgent = 1')} `
       + `| held ${q('SELECT COUNT(*) c FROM quarantine WHERE triaged_at IS NULL')}`);
     console.log(`escalations fired ${q('SELECT COUNT(*) c FROM task_escalations')} | outbox pending ${q("SELECT COUNT(*) c FROM outbox WHERE status = 'pending'")}`);
+    console.log(`categorized ${q('SELECT COUNT(*) c FROM message_categories WHERE category IS NOT NULL')} `
+      + `| uncategorized ${q('SELECT COUNT(*) c FROM message_categories WHERE category IS NULL')} `
+      + `| suspicious ${q('SELECT COUNT(*) c FROM message_categories WHERE suspicious = 1')} (details: categories)`);
     const missing = db.prepare("SELECT kind, COUNT(*) c FROM tasks WHERE missing_sla = 1 GROUP BY kind").all();
     if (missing.length) {
       console.log(`\nkinds with no agreed SLA (surfaced for a person to set):`);
@@ -235,13 +312,15 @@ async function main() {
   qq-dryrun            build AMS notes and show them without sending
   scan-nosend          fail if any send capability appears in the source
   check-leakage        fail if real names or secrets appear in the tree
+  categories           emails per category (the agency's 18); --list shows each email
+  patterns             list learned patterns; patterns show|approve|retire <id> [--by=NAME]
   status               counts and configuration
 
-Options: --db=PATH --now=ISO --live --parsers-only --port=N --json=PATH --out=PATH --fresh --verbose`);
+Options: --db=PATH --now=ISO --live --parsers-only --port=N --json=PATH --out=PATH --fresh --verbose --by=NAME --list`);
     process.exitCode = cmd ? 1 : 0;
     return;
   }
-  await COMMANDS[cmd](flags);
+  await COMMANDS[cmd](flags, _.slice(1));
 }
 
 if (require.main === module) {

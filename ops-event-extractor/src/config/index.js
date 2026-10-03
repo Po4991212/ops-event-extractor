@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { DataModeError } = require('../core/errors');
 const { SLA, MISSING_SLA_KINDS, EVENT_KINDS, validateSla } = require('./sla');
+const { validateCategories } = require('./categories');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 
@@ -70,11 +71,23 @@ function load(overrides = {}) {
     // probabilities and not a guarantee of accuracy.
     thresholds: { auto: 0.85, review: 0.55 },
 
+    // Learned patterns (src/extract/learned/patterns.js). A pattern needs this
+    // many agreements with the model, and none against, before a person may
+    // approve it. Once approved, every Nth use is still re-read by the model so
+    // a carrier changing its template is caught. Starting values, not tuned.
+    learnedPatterns: {
+      enabled: envFlag('OPS_LEARNED_PATTERNS', true),
+      agreementsToReady: Number(process.env.OPS_LEARNED_AGREEMENTS || 3),
+      spotCheckEvery: Number(process.env.OPS_LEARNED_SPOT_CHECK_EVERY || 10),
+    },
+
     ...overrides,
   };
 
   const slaProblems = validateSla(cfg.sla);
   if (slaProblems.length) throw new Error(`SLA configuration invalid:\n  ${slaProblems.join('\n  ')}`);
+  const catProblems = validateCategories();
+  if (catProblems.length) throw new Error(`category configuration invalid:\n  ${catProblems.join('\n  ')}`);
 
   return cfg;
 }

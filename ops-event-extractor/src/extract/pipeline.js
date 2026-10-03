@@ -9,6 +9,8 @@ const { resolve, record: recordResolution } = require('../resolve/account-resolv
 const { acceptCandidate, quarantineCandidate, recordCandidate } = require('../events/store');
 const { upsertTask, markUrgent } = require('../tasks/tasks');
 const { getMessage } = require('../ingest/store');
+const learned = require('./learned/patterns');
+const categories = require('./categorize');
 
 /**
  * One message in, zero or more obligations out.
@@ -95,7 +97,7 @@ function processEvents(db, cfg, clock, message, blocks, events, { source, versio
       candidateId, message, event, resolution, gateResult,
       confidence: { ...conf, band: b }, source, parserVersion: version,
     });
-    out.accepted.push({ ...accepted, kind: event.kind, confidence: conf.score, band: b });
+    out.accepted.push({ ...accepted, kind: event.kind, confidence: conf.score, band: b, event });
 
     // Only a unique supported account match may create an automatic task.
     // Everything else still gets a visible task, in a review state.
@@ -111,7 +113,27 @@ function processEvents(db, cfg, clock, message, blocks, events, { source, versio
   return out;
 }
 
-async function processMessage(db, cfg, clock, messageId, { sources = null, modelExtractor = null, log } = {}) {
+/**
+ * Extracts, then files the email under one of the agency's eighteen categories.
+ * Categorizing comes last because a grounded obligation is the best evidence
+ * of what an email is about.
+ */
+async function processMessage(db, cfg, clock, messageId, opts = {}) {
+  const out = await extractMessage(db, cfg, clock, messageId, opts);
+  const message = getMessage(db, messageId);
+  const c = categories.categorize(message, out, { sources: opts.sources || undefined });
+  categories.record(db, clock, messageId, c);
+
+  // Learn only from model answers that passed every evidence gate, and never
+  // from a suspicious email: the first version learned a pattern from a
+  // lookalike "TWIA" sender, which would have taught the system to trust it.
+  if (cfg.learnedPatterns && cfg.learnedPatterns.enabled && out.modelStatus === 'ok' && !c.suspicious) {
+    for (const a of out.accepted) learned.learn(db, cfg, clock, { message, event: a.event, family: out.routing.family });
+  }
+  return { ...out, category: c };
+}
+
+async function extractMessage(db, cfg, clock, messageId, { sources = null, modelExtractor = null, log } = {}) {
   const message = getMessage(db, messageId);
   if (!message) throw new Error(`unknown message ${messageId}`);
   const blocks = message.blocks;
@@ -143,6 +165,28 @@ async function processMessage(db, cfg, clock, messageId, { sources = null, model
   const hasSignals = Boolean(parsed && parsed.signals && parsed.signals.length);
 
   if (parserFoundNothing && !hasSignals) {
+    const lp = cfg.learnedPatterns && cfg.learnedPatterns.enabled;
+
+    // An approved learned pattern that reads this message replaces the model
+    // call, except on a periodic spot check, where the model reads it too and
+    // its answer wins.
+    let spotCheck = null;
+    if (lp) {
+      const hit = learned.approvedMatch(db, cfg, { message, blocks });
+      if (hit) {
+        const due = learned.countUse(db, clock, hit.pattern, cfg.learnedPatterns.spotCheckEvery);
+        if (due && modelExtractor) {
+          spotCheck = hit;
+        } else {
+          attempt(db, clock, messageId, 'learned', { status: 'ok', family: routing.family,
+            detail: `approved pattern ${hit.pattern.id}; model call skipped` });
+          const res = processEvents(db, cfg, clock, message, blocks, [hit.event],
+            { source: 'learned', version: hit.pattern.id, family: routing.family });
+          return { routing, events: 1, ...res, deferred: false, learnedPattern: hit.pattern.id };
+        }
+      }
+    }
+
     if (!modelExtractor) {
       // Parser-only mode. A known sender with an unrecognized template is not
       // discarded: it is recorded as awaiting model extraction / review.
@@ -157,11 +201,29 @@ async function processMessage(db, cfg, clock, messageId, { sources = null, model
       inputHash: modelResult.inputHash, detail: modelResult.detail || null,
     });
     if (modelResult.status !== 'ok') {
+      if (spotCheck) {
+        // The check could not run; the approved pattern still stands for this one.
+        const res = processEvents(db, cfg, clock, message, blocks, [spotCheck.event],
+          { source: 'learned', version: spotCheck.pattern.id, family: routing.family });
+        return { routing, events: 1, ...res, deferred: false, learnedPattern: spotCheck.pattern.id, modelStatus: modelResult.status };
+      }
       return { routing, events: 0, accepted: [], quarantined: [], tasks: [], deferred: true, modelStatus: modelResult.status };
     }
-    const res = processEvents(db, cfg, clock, message, blocks, modelResult.payload.events,
+    const modelEvents = modelResult.payload.events;
+    if (spotCheck) {
+      const c = learned.compare(spotCheck.event, modelEvents);
+      const fresh = learned.recordTrial(db, clock, spotCheck.pattern, message, 'spot_check', c.agree ? 'agree' : 'disagree', c.detail);
+      if (fresh && !c.agree) {
+        learned.setStatus(db, clock, spotCheck.pattern, 'suspended',
+          `spot check disagreed with the model on ${message.id}`, 'learned-patterns');
+      }
+    }
+    if (lp) learned.shadowCompare(db, cfg, clock, { message, blocks, modelEvents });
+
+    const res = processEvents(db, cfg, clock, message, blocks, modelEvents,
       { source: 'model', version: cfg.model.name, family: routing.family });
-    return { routing, events: modelResult.payload.events.length, ...res, deferred: false, modelStatus: 'ok' };
+
+    return { routing, events: modelEvents.length, ...res, deferred: false, modelStatus: 'ok' };
   }
 
   const res = parsed.payload.events.length

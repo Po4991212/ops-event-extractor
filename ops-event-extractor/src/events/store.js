@@ -3,6 +3,11 @@ const { derivedId } = require('../core/hash');
 const { audit } = require('../db/db');
 const { identityKey, findLinkCandidates, revisionReason } = require('./identity');
 
+/** parser:<version>, learned:<pattern id> or model:<model name>. */
+function actorFor(source, version) {
+  return `${['parser', 'learned'].includes(source) ? source : 'model'}:${version}`;
+}
+
 /**
  * Writes accepted candidates into the obligation model.
  *
@@ -81,7 +86,7 @@ function acceptCandidate(db, clock, {
       VALUES (?,?,?,?,?,?,?,?)`).run(
       vid, obligation.id, version, JSON.stringify(merged), prevVersion ? prevVersion.id : null,
       prevVersion ? `revised fields: ${diffs.join(', ')}` : 'initial extraction',
-      source === 'parser' ? `parser:${parserVersion}` : `model:${parserVersion}`, now,
+      actorFor(source, parserVersion), now,
     );
     db.prepare('UPDATE obligations SET current_version_id = ? WHERE id = ?').run(vid, obligation.id);
     versionRow = db.prepare('SELECT * FROM event_versions WHERE id = ?').get(vid);
@@ -145,7 +150,7 @@ function acceptCandidate(db, clock, {
   );
 
   audit(db, {
-    at: now, actor: source === 'parser' ? `parser:${parserVersion}` : `model:${parserVersion}`,
+    at: now, actor: actorFor(source, parserVersion),
     action: created ? 'obligation_created' : (diffs.length ? 'obligation_revised' : 'obligation_source_linked'),
     subjectType: 'obligation', subjectId: obligation.id,
     detail: { messageId: message.id, kind: event.kind, diffs, carriedForward, confidence: confidence.score, ambiguousLink },
